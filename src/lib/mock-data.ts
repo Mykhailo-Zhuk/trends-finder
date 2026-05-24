@@ -1,0 +1,188 @@
+import type { Product, SearchResponse } from "@/types";
+
+const MOCK_PRODUCTS: Product[] = [
+  {
+    id: "ae-1001",
+    title: "Wireless Bluetooth Earbuds ANC Noise Cancelling",
+    price: 12.99,
+    currency: "USD",
+    rating: 4.8,
+    orders: 15420,
+    seller: "TechSound Store",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder.jpg",
+    productUrl: "https://aliexpress.com",
+    platform: "aliexpress",
+    category: "Electronics",
+  },
+  {
+    id: "ae-1002",
+    title: "Smart Watch Fitness Tracker Heart Rate Monitor IP68",
+    price: 18.50,
+    currency: "USD",
+    rating: 4.6,
+    orders: 9830,
+    seller: "WearTech Official",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder2.jpg",
+    productUrl: "https://aliexpress.com",
+    platform: "aliexpress",
+    category: "Electronics",
+  },
+  {
+    id: "ae-1003",
+    title: "LED Strip Lights RGB 5050 App Control 10m",
+    price: 8.75,
+    currency: "USD",
+    rating: 4.7,
+    orders: 32100,
+    seller: "LightDecor",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder3.jpg",
+    productUrl: "https://aliexpress.com",
+    platform: "aliexpress",
+    category: "Home",
+  },
+  {
+    id: "ae-1004",
+    title: "Portable Magnetic Charging Cable 3-in-1 USB C",
+    price: 3.20,
+    currency: "USD",
+    rating: 4.5,
+    orders: 48200,
+    seller: "CableKing",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder4.jpg",
+    productUrl: "https://aliexpress.com",
+    platform: "aliexpress",
+    category: "Accessories",
+  },
+  {
+    id: "ae-1005",
+    title: "Mini Projector 1080P Home Theater Portable WiFi",
+    price: 45.00,
+    currency: "USD",
+    rating: 4.4,
+    orders: 3200,
+    seller: "ProjectorPro",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder5.jpg",
+    productUrl: "https://aliexpress.com",
+    platform: "aliexpress",
+    category: "Electronics",
+  },
+  {
+    id: "ae-1006",
+    title: "Silicone Kitchen Utensil Set 6pcs Non-Stick",
+    price: 9.99,
+    currency: "USD",
+    rating: 4.9,
+    orders: 21500,
+    seller: "KitchenMaster",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder6.jpg",
+    productUrl: "https://aliexpress.com",
+    platform: "aliexpress",
+    category: "Kitchen",
+  },
+  {
+    id: "ab-2001",
+    title: "Custom Logo Wireless Charger 15W Fast Charging Pad",
+    price: 4.50,
+    currency: "USD",
+    rating: 4.7,
+    orders: 5600,
+    seller: "Shenzhen PowerTech Co., Ltd.",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder7.jpg",
+    productUrl: "https://alibaba.com",
+    platform: "alibaba",
+    category: "Electronics",
+  },
+  {
+    id: "ab-2002",
+    title: "Eco Friendly Bamboo Water Bottle 500ml BPA Free",
+    price: 2.80,
+    currency: "USD",
+    rating: 4.6,
+    orders: 8900,
+    seller: "GreenLife Products",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder8.jpg",
+    productUrl: "https://alibaba.com",
+    platform: "alibaba",
+    category: "Lifestyle",
+  },
+  {
+    id: "ab-2003",
+    title: "Folding Solar Panel 200W Portable Outdoor Camping",
+    price: 89.00,
+    currency: "USD",
+    rating: 4.8,
+    orders: 1200,
+    seller: "SolarEnergy Manufacturing",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder9.jpg",
+    productUrl: "https://alibaba.com",
+    platform: "alibaba",
+    category: "Outdoor",
+  },
+  {
+    id: "ab-2004",
+    title: "Thermal Insulated Lunch Bag Waterproof 15L",
+    price: 5.20,
+    currency: "USD",
+    rating: 4.5,
+    orders: 14300,
+    seller: "BagFactory Direct",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder10.jpg",
+    productUrl: "https://alibaba.com",
+    platform: "alibaba",
+    category: "Lifestyle",
+  },
+  {
+    id: "ae-1007",
+    title: "Mechanical Gaming Keyboard RGB Backlit 87 Keys",
+    price: 22.00,
+    currency: "USD",
+    rating: 4.6,
+    orders: 7800,
+    seller: "GameGear Store",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder11.jpg",
+    productUrl: "https://aliexpress.com",
+    platform: "aliexpress",
+    category: "Electronics",
+  },
+  {
+    id: "ab-2005",
+    title: "Customizable Phone Case Protective Shockproof Cover",
+    price: 1.20,
+    currency: "USD",
+    rating: 4.3,
+    orders: 55000,
+    seller: "CaseMaker Co.",
+    imageUrl: "https://ae01.alicdn.com/kf/placeholder12.jpg",
+    productUrl: "https://alibaba.com",
+    platform: "alibaba",
+    category: "Accessories",
+  },
+];
+
+export function getMockResults(
+  query: string,
+  platform: "aliexpress" | "alibaba" | "both",
+  page: number,
+  limit: number
+): SearchResponse {
+  const filtered = MOCK_PRODUCTS.filter((p) => {
+    const matchesPlatform =
+      platform === "both" || p.platform === platform;
+    const matchesQuery =
+      !query ||
+      p.title.toLowerCase().includes(query.toLowerCase()) ||
+      p.category?.toLowerCase().includes(query.toLowerCase());
+    return matchesPlatform && matchesQuery;
+  });
+
+  const start = (page - 1) * limit;
+  const paginated = filtered.slice(start, start + limit);
+
+  return {
+    products: paginated,
+    total: filtered.length,
+    page,
+    totalPages: Math.max(1, Math.ceil(filtered.length / limit)),
+    cached: false,
+  };
+}
